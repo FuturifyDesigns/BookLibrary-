@@ -1,14 +1,109 @@
-const INTRO_LINES = [
-  { text: "Ohhhhh… so it’s you…", mood: "doubt", hold: 2600 },
-  { text: "Mr Maunge has talked about you…", mood: "doubt", hold: 2800 },
-  { text: "Said a lot of things…", mood: "doubt", hold: 2400 },
-  { text: "Hmmm…", mood: "doubt", hold: 2000 },
-  { text: "Welcome in.", mood: "happy", hold: 2200 },
-  { text: "We have been expecting you, Laura!!", mood: "happy", hold: 3000 },
+const MASCOTS = {
+  halt: "assets/mascots/halt.png",
+  angryExplain: "assets/mascots/angry-explain.png",
+  angryChecklist: "assets/mascots/angry-checklist.png",
+  waitWait: "assets/mascots/wait-wait.png",
+  unsatisfied: "assets/mascots/unsatisfied.png",
+  welcome: "assets/mascots/welcome.png",
+  shhh: "assets/mascots/shhh.png",
+};
+
+const MASCOT_SEQUENCE = [
   {
-    text: "Get comfy — Mr Maunge has something to show his so-called princess.",
-    mood: "happy",
-    hold: 3400,
+    id: "halt",
+    image: MASCOTS.halt,
+    speaker: "Security",
+    text: "",
+    halt: true,
+    mood: "dark",
+    hold: 2200,
+    female: true,
+    male: false,
+  },
+  {
+    id: "explain",
+    image: MASCOTS.angryExplain,
+    speaker: "Security",
+    text: "How did you get access here?? Only OUR ESTEEMED CEO MR MAUNGE is allowed here — not common peasants!! What do you want?",
+    mood: "dark",
+    hold: 5200,
+    female: true,
+    male: false,
+  },
+  {
+    id: "checklist",
+    image: MASCOTS.angryChecklist,
+    speaker: "Security",
+    text: "Let me check the list…",
+    mood: "dark",
+    hold: 1800,
+    female: true,
+    male: false,
+    checklist: true,
+  },
+  {
+    id: "denied",
+    image: MASCOTS.angryChecklist,
+    speaker: "Security",
+    text: "You are not here. Mr Maunge only allows ONE person through here… and it’s not you.",
+    mood: "dark",
+    hold: 4800,
+    female: true,
+    male: false,
+    checklistDenied: true,
+  },
+  {
+    id: "intervene",
+    image: MASCOTS.waitWait,
+    speaker: "Mr Maunge’s Assistant",
+    text: "Wait wait wait — you idiot! Who are you talking to like that?? That’s someone very special. Treat her with much respect — it’s HER!!",
+    mood: "dark",
+    hold: 5800,
+    female: false,
+    male: true,
+    maleEnter: true,
+  },
+  {
+    id: "realize",
+    image: MASCOTS.unsatisfied,
+    speaker: "Security",
+    text: "Ohhhh… so it’s her? Mr Maunge’s so-called princess… oh I see…",
+    mood: "dark",
+    hold: 5000,
+    female: true,
+    male: false,
+  },
+  {
+    id: "bright",
+    image: MASCOTS.welcome,
+    speaker: "Security",
+    text: "Hey there — we’ve been expecting you. Sorry for the rude welcoming… there are a lot of fakes, you know. Yeah.",
+    mood: "bright",
+    hold: 5500,
+    female: true,
+    male: false,
+    brightShift: true,
+  },
+  {
+    id: "welcomeLaura",
+    image: MASCOTS.welcome,
+    speaker: "Security",
+    text: "Welcome in, Laura!! We have been expecting you. Get comfy — Mr Maunge has something to show his so-called princess.",
+    mood: "bright",
+    hold: 5200,
+    female: true,
+    male: false,
+  },
+  {
+    id: "shhh",
+    image: MASCOTS.shhh,
+    speaker: "Security",
+    text: "Mr Maunge has something special to show you. Hope you like it…",
+    mood: "bright",
+    hold: 4500,
+    female: true,
+    male: false,
+    shhh: true,
   },
 ];
 
@@ -27,9 +122,12 @@ const WIND_LINES = [
 
 function requireAccess() {
   if (sessionStorage.getItem("ch_secret") === "1") return true;
-  // Soft allow if opened directly while testing locally — still redirect for real surprise flow
   window.location.href = "login.html";
   return false;
+}
+
+function wait(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
 function spawnParticles(container, count = 28) {
@@ -46,51 +144,142 @@ function spawnParticles(container, count = 28) {
   }
 }
 
-function playIntro({ onDone }) {
-  const box = document.getElementById("introLines");
-  const intro = document.getElementById("intro");
-  let index = 0;
+function setMascotImage(img, src, enterClass = "enter") {
+  if (!img) return;
+  img.classList.remove("enter", "exit", "pulse");
+  img.hidden = false;
+  img.src = src;
+  requestAnimationFrame(() => {
+    img.classList.add(enterClass);
+  });
+}
+
+function hideMascot(img) {
+  if (!img) return;
+  img.classList.add("exit");
+  img.classList.remove("enter", "pulse");
+  window.setTimeout(() => {
+    img.hidden = true;
+    img.classList.remove("exit");
+  }, 450);
+}
+
+function typeDialogue(el, text, speed = 22) {
+  return new Promise((resolve) => {
+    if (!el) {
+      resolve();
+      return;
+    }
+    el.textContent = "";
+    let i = 0;
+    const tick = () => {
+      if (i < text.length) {
+        el.textContent += text.charAt(i);
+        i += 1;
+        window.setTimeout(tick, speed);
+      } else {
+        resolve();
+      }
+    };
+    tick();
+  });
+}
+
+async function playMascotIntro({ onDone }) {
+  const intro = document.getElementById("mascotIntro");
+  const female = document.getElementById("mascotFemale");
+  const male = document.getElementById("mascotMale");
+  const speaker = document.getElementById("mascotSpeaker");
+  const line = document.getElementById("mascotLine");
+  const haltEl = document.getElementById("mascotHalt");
+  const veil = document.getElementById("mascotVeil");
+  const bg = document.getElementById("mascotBg");
+  const flash = document.getElementById("mascotFlash");
+  const checklist = document.getElementById("checklistOverlay");
+  const scanLine = document.getElementById("scanLine");
+  const deniedLine = document.getElementById("deniedLine");
+
   let cancelled = false;
 
   const finish = () => {
     if (cancelled) return;
     cancelled = true;
     intro?.classList.add("done");
-    window.setTimeout(onDone, 700);
+    window.setTimeout(onDone, 800);
   };
 
   document.getElementById("skipIntro")?.addEventListener("click", finish);
 
-  const showNext = () => {
-    if (cancelled) return;
-    if (index >= INTRO_LINES.length) {
-      finish();
-      return;
+  for (const step of MASCOT_SEQUENCE) {
+    if (cancelled) break;
+
+    intro?.classList.toggle("mood-bright", step.mood === "bright");
+    intro?.classList.toggle("mood-dark", step.mood === "dark");
+
+    if (step.brightShift) {
+      flash?.classList.add("flash-on");
+      await wait(350);
+      flash?.classList.remove("flash-on");
+      bg?.classList.add("bright");
+      veil?.classList.add("bright");
     }
 
-    const line = INTRO_LINES[index];
-    const el = document.createElement("p");
-    el.className = `intro-line ${line.mood}`;
-    el.textContent = line.text;
-    box.innerHTML = "";
-    box.appendChild(el);
+    haltEl.hidden = !step.halt;
+    line.hidden = !!step.halt;
+    speaker.hidden = !!step.halt;
 
-    requestAnimationFrame(() => {
-      el.classList.add("show");
-    });
+    if (step.halt) {
+      haltEl.classList.remove("pop");
+      setMascotImage(female, step.image);
+      male.hidden = true;
+      requestAnimationFrame(() => haltEl.classList.add("pop"));
+      await wait(step.hold);
+      continue;
+    }
 
-    window.setTimeout(() => {
-      if (cancelled) return;
-      el.classList.add("hide");
-      el.classList.remove("show");
-      window.setTimeout(() => {
-        index += 1;
-        showNext();
-      }, 450);
-    }, line.hold);
-  };
+    if (step.maleEnter) {
+      hideMascot(female);
+      await wait(200);
+      setMascotImage(male, step.image, "enter-right");
+      male.classList.add("shake");
+      await wait(400);
+      male.classList.remove("shake");
+    } else if (step.female) {
+      hideMascot(male);
+      await wait(step.male ? 0 : 150);
+      setMascotImage(female, step.image);
+      if (step.shhh) female.classList.add("shhh-pose");
+      else female.classList.remove("shhh-pose");
+    }
 
-  showNext();
+    speaker.textContent = step.speaker;
+    speaker.hidden = false;
+    line.hidden = false;
+
+    if (step.checklist) {
+      checklist.hidden = false;
+      scanLine.hidden = false;
+      deniedLine.hidden = true;
+      scanLine.classList.add("scanning-active");
+    }
+
+    if (step.checklistDenied) {
+      scanLine.hidden = true;
+      deniedLine.hidden = false;
+      checklist?.classList.add("denied-flash");
+      await wait(300);
+      checklist?.classList.remove("denied-flash");
+    }
+
+    await typeDialogue(line, step.text);
+    await wait(Math.max(800, step.hold - step.text.length * 22));
+
+    if (step.id === "denied") {
+      checklist.hidden = true;
+    }
+  }
+
+  if (!cancelled) finish();
 }
 
 function setupLoveScroll(onComplete) {
@@ -164,7 +353,6 @@ function setupProposal() {
     tease();
   });
 
-  // Desktop: flee on hover too after first attempt
   noBtn.addEventListener("mouseenter", () => {
     if (noClicks > 0) tease();
   });
@@ -176,7 +364,6 @@ function setupProposal() {
     launchHearts();
   });
 
-  // Initial placement beside Yes
   window.setTimeout(() => {
     noBtn.style.left = "68%";
     noBtn.style.top = "50%";
@@ -200,30 +387,26 @@ function launchHearts() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (!requireAccess()) return;
-
+function startMainExperience() {
   const world = document.getElementById("secretWorld");
-  const welcome = document.getElementById("welcomeBlock");
   const love = document.getElementById("loveScroll");
   const proposal = document.getElementById("proposal");
 
+  world.hidden = false;
+  love.hidden = false;
   spawnParticles(document.getElementById("particles"));
 
-  playIntro({
-    onDone: () => {
-      world.hidden = false;
-      welcome.hidden = false;
-    },
+  setupLoveScroll(() => {
+    love.hidden = true;
+    proposal.hidden = false;
+    setupProposal();
   });
+}
 
-  document.getElementById("beginStory")?.addEventListener("click", () => {
-    welcome.hidden = true;
-    love.hidden = false;
-    setupLoveScroll(() => {
-      love.hidden = true;
-      proposal.hidden = false;
-      setupProposal();
-    });
+document.addEventListener("DOMContentLoaded", () => {
+  if (!requireAccess()) return;
+
+  playMascotIntro({
+    onDone: startMainExperience,
   });
 });
