@@ -1215,6 +1215,11 @@ img {
   .spotlight-poster {
     order: -1;
   }
+  .event-list,
+  .about,
+  .atmosphere {
+    grid-template-columns: 1fr;
+  }
   .atmosphere {
     margin: 0;
     border-radius: 0;
