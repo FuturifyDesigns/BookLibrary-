@@ -1,12 +1,34 @@
 const MASCOTS = {
-  halt: "assets/mascots/halt.png",
-  angryExplain: "assets/mascots/angry-explain.png",
-  angryChecklist: "assets/mascots/angry-checklist.png",
-  waitWait: "assets/mascots/wait-wait.png",
-  unsatisfied: "assets/mascots/unsatisfied.png",
-  welcome: "assets/mascots/welcome.png",
-  shhh: "assets/mascots/shhh.png",
+  halt: "assets/mascots/halt.webp",
+  angryExplain: "assets/mascots/angry-explain.webp",
+  angryChecklist: "assets/mascots/angry-checklist.webp",
+  waitWait: "assets/mascots/wait-wait.webp",
+  unsatisfied: "assets/mascots/unsatisfied.webp",
+  welcome: "assets/mascots/welcome.webp",
+  shhh: "assets/mascots/shhh.webp",
 };
+
+const ALL_ASSETS = [
+  ...Object.values(MASCOTS),
+  "assets/love/love-01.webp",
+  "assets/love/love-02.webp",
+  "assets/love/love-03.webp",
+  "assets/love/love-04.webp",
+  "assets/love/love-05.webp",
+  "assets/love/love-06.webp",
+  "assets/celebration.png",
+];
+
+const LOVE_BACKGROUNDS = [
+  "assets/love/love-01.webp",
+  "assets/love/love-02.webp",
+  "assets/love/love-03.webp",
+  "assets/love/love-04.webp",
+  "assets/love/love-05.webp",
+  "assets/love/love-06.webp",
+];
+
+const LOVE_STEP_MS = 5800;
 
 const MASCOT_SEQUENCE = [
   {
@@ -36,7 +58,7 @@ const MASCOT_SEQUENCE = [
     speaker: "Security",
     text: "Let me check the list…",
     mood: "dark",
-    hold: 1800,
+    hold: 2800,
     female: true,
     male: false,
     checklist: true,
@@ -50,6 +72,7 @@ const MASCOT_SEQUENCE = [
     hold: 4800,
     female: true,
     male: false,
+    checklist: true,
     checklistDenied: true,
   },
   {
@@ -120,6 +143,8 @@ const WIND_LINES = [
   "Plot twist: the wind works for Mr Maunge.",
 ];
 
+const imageCache = new Map();
+
 function requireAccess() {
   if (sessionStorage.getItem("ch_secret") === "1") return true;
   window.location.href = "login.html";
@@ -128,6 +153,27 @@ function requireAccess() {
 
 function wait(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+function preloadImages(urls) {
+  return Promise.all(
+    urls.map(
+      (url) =>
+        new Promise((resolve) => {
+          if (imageCache.has(url)) {
+            resolve();
+            return;
+          }
+          const img = new Image();
+          img.onload = () => {
+            imageCache.set(url, img);
+            resolve();
+          };
+          img.onerror = resolve;
+          img.src = url;
+        })
+    )
+  );
 }
 
 function spawnParticles(container, count = 28) {
@@ -146,9 +192,12 @@ function spawnParticles(container, count = 28) {
 
 function setMascotImage(img, src, enterClass = "enter") {
   if (!img) return;
-  img.classList.remove("enter", "exit", "pulse");
+  img.classList.remove("enter", "exit", "pulse", "enter-right");
   img.hidden = false;
-  img.src = src;
+  if (img.dataset.current !== src) {
+    img.src = src;
+    img.dataset.current = src;
+  }
   requestAnimationFrame(() => {
     img.classList.add(enterClass);
   });
@@ -157,14 +206,14 @@ function setMascotImage(img, src, enterClass = "enter") {
 function hideMascot(img) {
   if (!img) return;
   img.classList.add("exit");
-  img.classList.remove("enter", "pulse");
+  img.classList.remove("enter", "pulse", "enter-right");
   window.setTimeout(() => {
     img.hidden = true;
     img.classList.remove("exit");
-  }, 450);
+  }, 300);
 }
 
-function typeDialogue(el, text, speed = 22) {
+function typeDialogue(el, text, speed = 20) {
   return new Promise((resolve) => {
     if (!el) {
       resolve();
@@ -195,26 +244,11 @@ async function playMascotIntro({ onDone }) {
   const veil = document.getElementById("mascotVeil");
   const bg = document.getElementById("mascotBg");
   const flash = document.getElementById("mascotFlash");
-  const checklist = document.getElementById("checklistOverlay");
-  const scanLine = document.getElementById("scanLine");
-  const deniedLine = document.getElementById("deniedLine");
-
-  let cancelled = false;
-
-  const finish = () => {
-    if (cancelled) return;
-    cancelled = true;
-    intro?.classList.add("done");
-    window.setTimeout(onDone, 800);
-  };
-
-  document.getElementById("skipIntro")?.addEventListener("click", finish);
 
   for (const step of MASCOT_SEQUENCE) {
-    if (cancelled) break;
-
     intro?.classList.toggle("mood-bright", step.mood === "bright");
     intro?.classList.toggle("mood-dark", step.mood === "dark");
+    intro?.classList.toggle("checklist-mode", !!step.checklist);
 
     if (step.brightShift) {
       flash?.classList.add("flash-on");
@@ -239,14 +273,14 @@ async function playMascotIntro({ onDone }) {
 
     if (step.maleEnter) {
       hideMascot(female);
-      await wait(200);
+      await wait(150);
       setMascotImage(male, step.image, "enter-right");
       male.classList.add("shake");
       await wait(400);
       male.classList.remove("shake");
     } else if (step.female) {
       hideMascot(male);
-      await wait(step.male ? 0 : 150);
+      await wait(100);
       setMascotImage(female, step.image);
       if (step.shhh) female.classList.add("shhh-pose");
       else female.classList.remove("shhh-pose");
@@ -256,85 +290,110 @@ async function playMascotIntro({ onDone }) {
     speaker.hidden = false;
     line.hidden = false;
 
-    if (step.checklist) {
-      checklist.hidden = false;
-      scanLine.hidden = false;
-      deniedLine.hidden = true;
-      scanLine.classList.add("scanning-active");
-    }
-
     if (step.checklistDenied) {
-      scanLine.hidden = true;
-      deniedLine.hidden = false;
-      checklist?.classList.add("denied-flash");
+      intro?.classList.add("denied-flash");
       await wait(300);
-      checklist?.classList.remove("denied-flash");
+      intro?.classList.remove("denied-flash");
     }
 
     await typeDialogue(line, step.text);
-    await wait(Math.max(800, step.hold - step.text.length * 22));
-
-    if (step.id === "denied") {
-      checklist.hidden = true;
-    }
+    await wait(Math.max(700, step.hold - step.text.length * 20));
   }
 
-  if (!cancelled) finish();
+  intro?.classList.add("done");
+  await wait(700);
+  onDone();
+}
+
+function setLoveBackground(index) {
+  const bg = document.getElementById("loveBg");
+  const bgNext = document.getElementById("loveBgNext");
+  const url = LOVE_BACKGROUNDS[index];
+  if (!bg || !url) return;
+
+  if (!bg.style.backgroundImage) {
+    bg.style.backgroundImage = `url('${url}')`;
+    bg.classList.add("visible");
+    return;
+  }
+
+  bgNext.style.backgroundImage = `url('${url}')`;
+  bgNext.classList.add("visible");
+  bg.classList.remove("visible");
+  window.setTimeout(() => {
+    bg.style.backgroundImage = `url('${url}')`;
+    bg.classList.add("visible");
+    bgNext.classList.remove("visible");
+  }, 900);
 }
 
 function setupLoveScroll(onComplete) {
   const section = document.getElementById("loveScroll");
   const cards = [...section.querySelectorAll(".love-card")];
   const bar = document.getElementById("loveBar");
-  const prev = document.getElementById("prevLove");
-  const next = document.getElementById("nextLove");
   let step = 0;
 
-  const render = () => {
-    cards.forEach((c, i) => c.classList.toggle("active", i === step));
-    bar.style.width = `${((step + 1) / cards.length) * 100}%`;
-    prev.disabled = step === 0;
-    next.textContent = step === cards.length - 1 ? "One last thing…" : "Continue";
+  const showStep = (i) => {
+    cards.forEach((c, idx) => c.classList.toggle("active", idx === i));
+    bar.style.width = `${((i + 1) / cards.length) * 100}%`;
+    setLoveBackground(i);
   };
 
-  prev.addEventListener("click", () => {
-    if (step > 0) {
-      step -= 1;
-      render();
-    }
-  });
+  showStep(0);
 
-  next.addEventListener("click", () => {
-    if (step < cards.length - 1) {
-      step += 1;
-      render();
-    } else {
-      onComplete();
+  const timer = window.setInterval(() => {
+    step += 1;
+    if (step >= cards.length) {
+      window.clearInterval(timer);
+      window.setTimeout(onComplete, 600);
+      return;
     }
-  });
+    showStep(step);
+  }, LOVE_STEP_MS);
+}
 
-  render();
+function rectsOverlap(a, b, gap = 24) {
+  return !(
+    a.right + gap < b.left ||
+    a.left - gap > b.right ||
+    a.bottom + gap < b.top ||
+    a.top - gap > b.bottom
+  );
 }
 
 function setupProposal() {
   const noBtn = document.getElementById("noBtn");
   const yesBtn = document.getElementById("yesBtn");
   const windMsg = document.getElementById("windMsg");
-  const actions = document.getElementById("proposalActions");
   let noClicks = 0;
 
   const moveNo = () => {
-    const bounds = actions.getBoundingClientRect();
+    const yesRect = yesBtn.getBoundingClientRect();
     const btnW = noBtn.offsetWidth || 80;
     const btnH = noBtn.offsetHeight || 48;
-    const pad = 8;
-    const maxX = Math.max(pad, bounds.width - btnW - pad);
-    const maxY = Math.max(pad, bounds.height - btnH - pad);
-    const x = pad + Math.random() * maxX;
-    const y = pad + Math.random() * maxY;
-    noBtn.style.left = `${x}px`;
-    noBtn.style.top = `${y}px`;
-    noBtn.style.transform = "translate(0, 0)";
+    const pad = 12;
+    const gap = 32;
+    const maxW = window.innerWidth - btnW - pad * 2;
+    const maxH = window.innerHeight - btnH - pad * 2;
+
+    for (let attempt = 0; attempt < 100; attempt += 1) {
+      const x = pad + Math.random() * Math.max(0, maxW);
+      const y = pad + Math.random() * Math.max(0, maxH);
+      const noRect = {
+        left: x,
+        top: y,
+        right: x + btnW,
+        bottom: y + btnH,
+      };
+      if (!rectsOverlap(noRect, yesRect, gap)) {
+        noBtn.style.position = "fixed";
+        noBtn.style.left = `${x}px`;
+        noBtn.style.top = `${y}px`;
+        noBtn.style.transform = "none";
+        noBtn.style.zIndex = "1000";
+        return;
+      }
+    }
   };
 
   const tease = () => {
@@ -359,16 +418,11 @@ function setupProposal() {
 
   yesBtn.addEventListener("click", () => {
     document.getElementById("proposal").hidden = true;
-    const cele = document.getElementById("celebration");
-    cele.hidden = false;
+    document.getElementById("celebration").hidden = false;
     launchHearts();
   });
 
-  window.setTimeout(() => {
-    noBtn.style.left = "68%";
-    noBtn.style.top = "50%";
-    noBtn.style.transform = "translate(-50%, -50%)";
-  }, 50);
+  window.setTimeout(moveNo, 80);
 }
 
 function launchHearts() {
@@ -403,8 +457,10 @@ function startMainExperience() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   if (!requireAccess()) return;
+
+  await preloadImages(ALL_ASSETS);
 
   playMascotIntro({
     onDone: startMainExperience,

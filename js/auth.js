@@ -1,5 +1,22 @@
 const SECRET_TOKENS = ["laura", "resego", "adei", "abbey"];
 
+const PRELOAD_ASSETS = [
+  "assets/mascots/halt.webp",
+  "assets/mascots/angry-explain.webp",
+  "assets/mascots/angry-checklist.webp",
+  "assets/mascots/wait-wait.webp",
+  "assets/mascots/unsatisfied.webp",
+  "assets/mascots/welcome.webp",
+  "assets/mascots/shhh.webp",
+  "assets/love/love-01.webp",
+  "assets/love/love-02.webp",
+  "assets/love/love-03.webp",
+  "assets/love/love-04.webp",
+  "assets/love/love-05.webp",
+  "assets/love/love-06.webp",
+  "assets/celebration.png",
+];
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
@@ -70,32 +87,38 @@ function validateConfirm(password, confirm) {
   return "";
 }
 
+function preloadAssets(urls) {
+  return Promise.all(
+    urls.map(
+      (url) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = resolve;
+          img.src = url;
+        })
+    )
+  );
+}
+
 function handleAuth(name) {
   if (isLaura(name)) {
     sessionStorage.setItem("ch_secret", "1");
     sessionStorage.setItem("ch_guest", name.trim());
     const overlay = document.getElementById("gateOverlay");
     if (overlay) overlay.hidden = false;
-    window.setTimeout(() => {
+    preloadAssets(PRELOAD_ASSETS).then(() => {
       window.location.href = "secret.html";
-    }, 1600);
+    });
     return;
   }
 
   const modal = document.getElementById("welcomeModal");
   const msg = document.getElementById("welcomeMsg");
   if (msg) {
-    msg.textContent = `Welcome back, ${firstName(name)}. Your account is active — continue browsing our collection.`;
+    msg.textContent = `Welcome, ${firstName(name)}. Your account is active — continue browsing our collection.`;
   }
   if (modal) modal.hidden = false;
-}
-
-function validateLoginForm() {
-  const name = document.getElementById("loginName");
-  const password = document.getElementById("loginPassword");
-  const nameOk = setFieldState(name, document.getElementById("loginNameError"), validateName(name?.value || ""));
-  const passOk = setFieldState(password, document.getElementById("loginPasswordError"), validatePassword(password?.value || ""));
-  return nameOk && passOk;
 }
 
 function validateSignupForm() {
@@ -131,27 +154,11 @@ function bindLiveValidation(input, validateFn, errorId) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const tabs = document.querySelectorAll(".auth-tab");
-  const loginForm = document.getElementById("loginForm");
   const signupForm = document.getElementById("signupForm");
-  if (!loginForm && !signupForm) return;
+  if (!signupForm) return;
 
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      tabs.forEach((t) => {
-        t.classList.remove("active");
-        t.setAttribute("aria-selected", "false");
-      });
-      tab.classList.add("active");
-      tab.setAttribute("aria-selected", "true");
-      const target = tab.dataset.tab;
-      loginForm.classList.toggle("active", target === "login");
-      signupForm.classList.toggle("active", target === "signup");
-    });
-  });
+  preloadAssets(PRELOAD_ASSETS);
 
-  bindLiveValidation(document.getElementById("loginName"), validateName, "loginNameError");
-  bindLiveValidation(document.getElementById("loginPassword"), validatePassword, "loginPasswordError");
   bindLiveValidation(document.getElementById("signupName"), validateName, "signupNameError");
   bindLiveValidation(document.getElementById("signupEmail"), validateEmail, "signupEmailError");
   bindLiveValidation(document.getElementById("signupPassword"), validatePassword, "signupPasswordError");
@@ -160,25 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return validateConfirm(pw, v);
   }, "signupConfirmError");
 
-  loginForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!validateLoginForm()) return;
-    const name = document.getElementById("loginName")?.value || "";
-    const btn = document.getElementById("loginSubmit");
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = "Signing in…";
-    }
-    window.setTimeout(() => {
-      handleAuth(name);
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = "Sign in";
-      }
-    }, 600);
-  });
-
-  signupForm?.addEventListener("submit", (e) => {
+  signupForm.addEventListener("submit", (e) => {
     e.preventDefault();
     if (!validateSignupForm()) return;
     const name = document.getElementById("signupName")?.value || "";
@@ -189,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     window.setTimeout(() => {
       handleAuth(name);
-      if (btn) {
+      if (btn && !isLaura(name)) {
         btn.disabled = false;
         btn.textContent = "Create account";
       }

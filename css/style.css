@@ -120,61 +120,67 @@ img {
   .cursor-glow.on { opacity: 1; }
 }
 
-.top-bar {
+.site-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 101;
+  z-index: 100;
+  transition:
+    background 0.35s ease,
+    backdrop-filter 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.header-top {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.45rem 5vw;
+  padding: 0.4rem 5vw;
   background: var(--forest-deep);
   color: rgba(239, 234, 226, 0.82);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
 }
 
-.top-bar p {
+.header-top p {
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.site-header {
-  position: fixed;
-  top: 2rem;
-  left: 0;
-  right: 0;
-  z-index: 100;
+.header-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.9rem 5vw;
-  transition:
-    background 0.35s ease,
-    backdrop-filter 0.35s ease,
-    box-shadow 0.35s ease,
-    top 0.35s ease,
-    color 0.35s ease;
+  padding: 0.85rem 5vw;
 }
 
-.auth-page .site-header {
-  top: 0;
+.auth-page .header-top {
+  display: none;
+}
+
+.site-header.scrolled .header-top,
+.site-header.solid .header-top {
+  display: none;
+}
+
+.site-header.scrolled .header-main,
+.site-header.solid .header-main {
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
 }
 
 .site-header.scrolled,
 .site-header.solid {
-  top: 0;
   background: rgba(243, 239, 232, 0.94);
   backdrop-filter: blur(16px);
   box-shadow: 0 1px 0 var(--cream-line);
 }
 
 /* Readable nav on dark hero */
-.site-header--hero:not(.scrolled):not(.solid) {
+.site-header--hero:not(.scrolled):not(.solid) .header-main {
   background: rgba(10, 18, 16, 0.55);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(239, 234, 226, 0.1);
@@ -336,7 +342,7 @@ img {
   min-height: 100vh;
   display: grid;
   align-items: end;
-  padding: 6rem 5vw 12vh;
+  padding: 7.5rem 5vw 12vh;
   color: var(--paper);
   overflow: hidden;
 }
@@ -1189,12 +1195,8 @@ img {
 }
 
 @media (max-width: 900px) {
-  .top-bar {
+  .header-top {
     display: none;
-  }
-
-  .site-header {
-    top: 0;
   }
 
   .nav { display: none; }

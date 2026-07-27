@@ -1,12 +1,12 @@
 const BOOKS = [
-  { title: "The Quiet Between Pages", author: "M. Ellison", price: "$18", color: "linear-gradient(160deg,#2f4f43,#1a3229)" },
-  { title: "Saltwater Letters", author: "J. Moreau", price: "$16", color: "linear-gradient(160deg,#4a6d8c,#2a4258)" },
-  { title: "Midnight Atlas", author: "R. Kane", price: "$22", color: "linear-gradient(160deg,#3d2f55,#221a33)" },
-  { title: "A Cup of Ordinary Magic", author: "L. Hart", price: "$15", color: "linear-gradient(160deg,#8a5a3c,#5a3824)" },
-  { title: "Garden of Soft Thorns", author: "S. Okonkwo", price: "$19", color: "linear-gradient(160deg,#5c6b3a,#354022)" },
-  { title: "Windows Facing West", author: "P. Adler", price: "$17", color: "linear-gradient(160deg,#6b3f4a,#3f242c)" },
-  { title: "Paper Moons", author: "N. Voss", price: "$14", color: "linear-gradient(160deg,#3f5c6b,#243844)" },
-  { title: "The Last Soft Hour", author: "C. Wren", price: "$20", color: "linear-gradient(160deg,#6b5238,#3f2f1f)" },
+  { title: "The Quiet Between Pages", author: "M. Ellison", price: "P185", color: "linear-gradient(160deg,#2f4f43,#1a3229)" },
+  { title: "Saltwater Letters", author: "J. Moreau", price: "P165", color: "linear-gradient(160deg,#4a6d8c,#2a4258)" },
+  { title: "Midnight Atlas", author: "R. Kane", price: "P220", color: "linear-gradient(160deg,#3d2f55,#221a33)" },
+  { title: "A Cup of Ordinary Magic", author: "L. Hart", price: "P150", color: "linear-gradient(160deg,#8a5a3c,#5a3824)" },
+  { title: "Garden of Soft Thorns", author: "S. Okonkwo", price: "P195", color: "linear-gradient(160deg,#5c6b3a,#354022)" },
+  { title: "Windows Facing West", author: "P. Adler", price: "P175", color: "linear-gradient(160deg,#6b3f4a,#3f242c)" },
+  { title: "Paper Moons", author: "N. Voss", price: "P140", color: "linear-gradient(160deg,#3f5c6b,#243844)" },
+  { title: "The Last Soft Hour", author: "C. Wren", price: "P200", color: "linear-gradient(160deg,#6b5238,#3f2f1f)" },
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
