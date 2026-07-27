@@ -15,6 +15,7 @@ const PRELOAD_ASSETS = [
   "assets/love/love-05.webp",
   "assets/love/love-06.webp",
   "assets/celebration.png",
+  "assets/spider-man-brand-new-day.webp",
 ];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

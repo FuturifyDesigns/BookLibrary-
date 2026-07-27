@@ -17,6 +17,7 @@ const ALL_ASSETS = [
   "assets/love/love-05.webp",
   "assets/love/love-06.webp",
   "assets/celebration.png",
+  "assets/spider-man-brand-new-day.webp",
 ];
 
 const LOVE_BACKGROUNDS = [
@@ -366,6 +367,7 @@ function setupProposal() {
   const yesBtn = document.getElementById("yesBtn");
   const windMsg = document.getElementById("windMsg");
   let noClicks = 0;
+  let roaming = false;
 
   const moveNo = () => {
     const yesRect = yesBtn.getBoundingClientRect();
@@ -386,6 +388,7 @@ function setupProposal() {
         bottom: y + btnH,
       };
       if (!rectsOverlap(noRect, yesRect, gap)) {
+        noBtn.classList.add("roaming");
         noBtn.style.position = "fixed";
         noBtn.style.left = `${x}px`;
         noBtn.style.top = `${y}px`;
@@ -398,6 +401,7 @@ function setupProposal() {
 
   const tease = () => {
     noClicks += 1;
+    roaming = true;
     moveNo();
     windMsg.textContent = WIND_LINES[(noClicks - 1) % WIND_LINES.length];
     windMsg.style.opacity = "0";
@@ -413,7 +417,7 @@ function setupProposal() {
   });
 
   noBtn.addEventListener("mouseenter", () => {
-    if (noClicks > 0) tease();
+    if (roaming) tease();
   });
 
   yesBtn.addEventListener("click", () => {
@@ -421,8 +425,6 @@ function setupProposal() {
     document.getElementById("celebration").hidden = false;
     launchHearts();
   });
-
-  window.setTimeout(moveNo, 80);
 }
 
 function launchHearts() {
