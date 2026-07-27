@@ -40,7 +40,7 @@
 
         <div class="field">
           <label for="signupName">Full name</label>
-          <input type="text" name="name" id="signupName" autocomplete="name" placeholder="e.g. Laura Abbey" required minlength="2" />
+          <input type="text" name="name" id="signupName" autocomplete="name" placeholder="Your full name" required minlength="2" />
           <p class="field-error" id="signupNameError" role="alert"></p>
         </div>
 
@@ -63,9 +63,15 @@
           <p class="field-error" id="signupConfirmError" role="alert"></p>
         </div>
 
-        <label class="checkbox-field">
-          <input type="checkbox" id="signupTerms" name="terms" required />
-          <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</span>
+        <label class="terms-box" for="signupTerms">
+          <span class="terms-check">
+            <input type="checkbox" id="signupTerms" name="terms" required />
+            <span class="terms-tick" aria-hidden="true"></span>
+          </span>
+          <span class="terms-copy">
+            <strong>Agree to continue</strong>
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          </span>
         </label>
         <p class="field-error" id="signupTermsError" role="alert"></p>
 

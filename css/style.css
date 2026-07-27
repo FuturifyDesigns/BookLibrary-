@@ -1011,6 +1011,106 @@ img {
   text-underline-offset: 2px;
 }
 
+.terms-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin: 0.35rem 0 0.75rem;
+  padding: 1rem 1.05rem;
+  border-radius: 14px;
+  border: 1px solid rgba(36, 63, 54, 0.12);
+  background: linear-gradient(135deg, rgba(36, 63, 54, 0.05), rgba(184, 146, 90, 0.08));
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.terms-box:hover {
+  border-color: rgba(36, 63, 54, 0.22);
+  background: linear-gradient(135deg, rgba(36, 63, 54, 0.07), rgba(184, 146, 90, 0.12));
+}
+
+.terms-box:has(input:checked) {
+  border-color: rgba(36, 63, 54, 0.35);
+  box-shadow: 0 0 0 3px rgba(109, 139, 124, 0.16);
+}
+
+.terms-check {
+  position: relative;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 0.1rem;
+}
+
+.terms-check input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.terms-tick {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 1.5px solid rgba(36, 63, 54, 0.28);
+  background: #fff;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.terms-tick::after {
+  content: "";
+  width: 6px;
+  height: 10px;
+  border: solid transparent;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translateY(-1px);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.terms-check input:checked + .terms-tick {
+  background: var(--forest);
+  border-color: var(--forest);
+}
+
+.terms-check input:checked + .terms-tick::after {
+  border-color: #fff;
+  opacity: 1;
+}
+
+.terms-check input:focus-visible + .terms-tick {
+  box-shadow: 0 0 0 3px rgba(109, 139, 124, 0.25);
+}
+
+.terms-copy {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.terms-copy strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--forest-deep);
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+}
+
+.terms-copy a {
+  color: var(--forest);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.terms-copy a:hover {
+  color: var(--forest-deep);
+}
+
 .form-success {
   margin-top: 1rem;
   padding: 0.85rem 1rem;
