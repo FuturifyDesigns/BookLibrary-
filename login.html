@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — Chapter House</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="auth-page">
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+  <header class="site-header solid">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">CH</span>
+      <span class="brand-name">Chapter House</span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">Back to store</a>
+    </nav>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-card reveal">
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab active" data-tab="login" role="tab">Sign in</button>
+        <button class="auth-tab" data-tab="signup" role="tab">Sign up</button>
+      </div>
+
+      <form id="loginForm" class="auth-form active" autocomplete="off">
+        <h1>Welcome back</h1>
+        <p class="auth-sub">Enter your name to continue shopping at Chapter House.</p>
+        <label>
+          <span>Your name</span>
+          <input type="text" name="name" id="loginName" placeholder="e.g. Alex Rivera" required />
+        </label>
+        <label>
+          <span>Password <em>(anything works)</em></span>
+          <input type="password" name="password" placeholder="••••••••" required />
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+      </form>
+
+      <form id="signupForm" class="auth-form" autocomplete="off">
+        <h1>Create a membership</h1>
+        <p class="auth-sub">Join Chapter House — soft lamps, quiet shelves, member evenings.</p>
+        <label>
+          <span>Full name</span>
+          <input type="text" name="name" id="signupName" placeholder="e.g. Alex Rivera" required />
+        </label>
+        <label>
+          <span>Email</span>
+          <input type="email" name="email" placeholder="you@email.com" required />
+        </label>
+        <label>
+          <span>Password <em>(anything works)</em></span>
+          <input type="password" name="password" placeholder="••••••••" required />
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+      </form>
+    </div>
+  </main>
+
+  <div class="welcome-modal" id="welcomeModal" hidden>
+    <div class="welcome-panel">
+      <div class="welcome-icon">📚</div>
+      <h2>Welcome to the bookstore</h2>
+      <p id="welcomeMsg">Nice to see you. Continue shopping — the shelves are waiting.</p>
+      <a href="index.html" class="btn btn-primary">Continue shopping</a>
+    </div>
+  </div>
+
+  <div class="gate-overlay" id="gateOverlay" hidden>
+    <div class="gate-spinner"></div>
+    <p>Opening a private chapter…</p>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
