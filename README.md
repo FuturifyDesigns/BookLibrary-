@@ -6,9 +6,9 @@ Live: https://futurifydesigns.github.io/BookLibrary-/
 
 ## Pages
 
-- `index.html` — bookstore home
-- `login.html` — sign in / sign up (name-based gate, no database)
-- `secret.html` — private chapter (unlocked by Laura’s name)
+- `index.html` — public bookstore site
+- `login.html` — account page (direct link only, not linked from homepage)
+- `secret.html` — private experience (unlocked via login)
 
 ## Deploy
 

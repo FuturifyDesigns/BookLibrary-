@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chapter House — Independent Bookstore</title>
-  <meta name="description" content="Chapter House — a quiet corner for readers. Browse shelves, find your next story." />
+  <meta name="description" content="Chapter House — curated fiction, poetry, and rare finds. Open daily in the heart of the city." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -18,18 +18,23 @@
 
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
-  <header class="site-header" id="siteHeader">
+  <div class="top-bar">
+    <p>Open daily · 9:00 AM – 8:00 PM · 14 Alder Lane</p>
+    <p>Free local delivery on orders over $45</p>
+  </div>
+
+  <header class="site-header site-header--hero" id="siteHeader">
     <a href="index.html" class="brand">
       <span class="brand-mark">CH</span>
       <span class="brand-name">Chapter House</span>
     </a>
-    <nav class="nav">
+    <nav class="nav" aria-label="Main">
       <a href="#shelves">Shelves</a>
       <a href="#events">Evenings</a>
       <a href="#about">About</a>
-      <a href="login.html" class="nav-cta">Sign in</a>
+      <a href="#visit" class="nav-cta">Visit us</a>
     </nav>
-    <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span>
     </button>
   </header>
@@ -44,12 +49,31 @@
         <p class="hero-sub">An independent bookstore for slow mornings, soft light, and the next chapter you didn’t know you needed.</p>
         <div class="hero-actions">
           <a href="#shelves" class="btn btn-primary">Browse the shelves</a>
-          <a href="login.html" class="btn btn-ghost">Member sign in</a>
+          <a href="#events" class="btn btn-ghost">Upcoming evenings</a>
         </div>
       </div>
       <div class="scroll-hint" aria-hidden="true">
         <span>Scroll</span>
         <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <section class="trust-bar" aria-label="Store highlights">
+      <div class="trust-item">
+        <strong>Est. 2014</strong>
+        <span>Family-owned</span>
+      </div>
+      <div class="trust-item">
+        <strong>4,200+</strong>
+        <span>Titles in stock</span>
+      </div>
+      <div class="trust-item">
+        <strong>Curated</strong>
+        <span>Staff picks weekly</span>
+      </div>
+      <div class="trust-item">
+        <strong>Community</strong>
+        <span>Readings & workshops</span>
       </div>
     </section>
 
@@ -97,17 +121,17 @@
       </div>
       <div class="event-list">
         <article class="event-card reveal">
-          <time>Fri · 7pm</time>
+          <time datetime="2026-07-31T19:00">Fri · 7pm</time>
           <h3>Poetry under soft lamps</h3>
           <p>Open mic for first drafts, quiet courage, and the kind of applause that feels like a hug.</p>
         </article>
         <article class="event-card reveal">
-          <time>Sat · 11am</time>
+          <time datetime="2026-08-01T11:00">Sat · 11am</time>
           <h3>Kids’ story hour</h3>
           <p>Picture books, silly voices, and tiny listeners who somehow always ask the best questions.</p>
         </article>
         <article class="event-card reveal">
-          <time>Sun · 4pm</time>
+          <time datetime="2026-08-02T16:00">Sun · 4pm</time>
           <h3>New release circle</h3>
           <p>Sip something warm, flip first pages, and leave with a title you didn’t plan to buy.</p>
         </article>
@@ -119,12 +143,53 @@
         <p class="eyebrow">About us</p>
         <h2>A bookstore that still believes in paper.</h2>
         <p>We opened Chapter House because the internet is loud and books are patient. Every shelf is curated by people who actually read — and who will happily spend twenty minutes helping you find the exact mood you’re craving.</p>
-        <a href="login.html" class="btn btn-primary">Join as a member</a>
+        <a href="#visit" class="btn btn-primary">Plan your visit</a>
       </div>
       <div class="about-visual reveal" aria-hidden="true">
         <div class="floating-book b1"></div>
         <div class="floating-book b2"></div>
         <div class="floating-book b3"></div>
+      </div>
+    </section>
+
+    <section class="visit" id="visit">
+      <div class="visit-grid">
+        <div class="visit-info reveal">
+          <p class="eyebrow">Visit & contact</p>
+          <h2>We’d love to see you in person.</h2>
+          <ul class="visit-details">
+            <li><strong>Address</strong> 14 Alder Lane, downtown</li>
+            <li><strong>Hours</strong> Mon–Sat 9–8 · Sun 10–6</li>
+            <li><strong>Phone</strong> (555) 014-2187</li>
+            <li><strong>Email</strong> hello@chapterhousebooks.com</li>
+          </ul>
+        </div>
+
+        <form class="visit-form reveal" id="newsletterForm" novalidate>
+          <h3>Stay in the loop</h3>
+          <p class="visit-form-sub">New arrivals, event invites, and staff picks — once a week, no spam.</p>
+
+          <div class="field">
+            <label for="newsName">Full name</label>
+            <input type="text" id="newsName" name="name" autocomplete="name" placeholder="Alex Rivera" required minlength="2" />
+            <p class="field-error" id="newsNameError" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="newsEmail">Email address</label>
+            <input type="email" id="newsEmail" name="email" autocomplete="email" placeholder="you@email.com" required />
+            <p class="field-error" id="newsEmailError" role="alert"></p>
+          </div>
+
+          <label class="checkbox-field">
+            <input type="checkbox" id="newsConsent" name="consent" required />
+            <span>I agree to receive updates from Chapter House. Unsubscribe anytime.</span>
+          </label>
+          <p class="field-error" id="newsConsentError" role="alert"></p>
+
+          <button type="submit" class="btn btn-primary btn-block" id="newsSubmit">Subscribe</button>
+          <p class="form-success" id="newsSuccess" hidden>Thank you — you’re on the list. See you at the shelves.</p>
+        </form>
       </div>
     </section>
   </main>
@@ -134,19 +199,21 @@
       <span class="brand-mark">CH</span>
       <strong>Chapter House</strong>
       <p>Independent bookstore · Open daily 9–8</p>
+      <p class="footer-fine">© 2026 Chapter House Books. All rights reserved.</p>
     </div>
     <div class="footer-links">
-      <a href="login.html">Sign in</a>
       <a href="#shelves">Shelves</a>
       <a href="#events">Evenings</a>
+      <a href="#visit">Visit</a>
+      <a href="#about">About</a>
     </div>
   </footer>
 
-  <div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav" id="mobileNav" aria-hidden="true">
     <a href="#shelves">Shelves</a>
     <a href="#events">Evenings</a>
     <a href="#about">About</a>
-    <a href="login.html">Sign in</a>
+    <a href="#visit">Visit us</a>
   </div>
 
   <script src="js/main.js"></script>

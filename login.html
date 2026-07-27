@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign in — Chapter House</title>
+  <title>Account — Chapter House</title>
+  <meta name="robots" content="noindex" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -18,47 +19,73 @@
       <span class="brand-name">Chapter House</span>
     </a>
     <nav class="nav">
-      <a href="index.html">Back to store</a>
+      <a href="index.html">← Back to store</a>
     </nav>
   </header>
 
   <main class="auth-main">
     <div class="auth-card reveal">
       <div class="auth-tabs" role="tablist">
-        <button class="auth-tab active" data-tab="login" role="tab">Sign in</button>
-        <button class="auth-tab" data-tab="signup" role="tab">Sign up</button>
+        <button class="auth-tab active" type="button" data-tab="login" role="tab" aria-selected="true">Sign in</button>
+        <button class="auth-tab" type="button" data-tab="signup" role="tab" aria-selected="false">Create account</button>
       </div>
 
-      <form id="loginForm" class="auth-form active" autocomplete="off">
+      <form id="loginForm" class="auth-form active" novalidate>
         <h1>Welcome back</h1>
-        <p class="auth-sub">Enter your name to continue shopping at Chapter House.</p>
-        <label>
-          <span>Your name</span>
-          <input type="text" name="name" id="loginName" placeholder="e.g. Alex Rivera" required />
-        </label>
-        <label>
-          <span>Password <em>(anything works)</em></span>
-          <input type="password" name="password" placeholder="••••••••" required />
-        </label>
-        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+        <p class="auth-sub">Sign in to your Chapter House account to manage orders and saved titles.</p>
+
+        <div class="field">
+          <label for="loginName">Full name</label>
+          <input type="text" name="name" id="loginName" autocomplete="name" placeholder="Alex Rivera" required minlength="2" />
+          <p class="field-error" id="loginNameError" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="loginPassword">Password</label>
+          <input type="password" name="password" id="loginPassword" autocomplete="current-password" placeholder="Enter your password" required minlength="8" />
+          <p class="field-hint">Minimum 8 characters</p>
+          <p class="field-error" id="loginPasswordError" role="alert"></p>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">Sign in</button>
       </form>
 
-      <form id="signupForm" class="auth-form" autocomplete="off">
-        <h1>Create a membership</h1>
-        <p class="auth-sub">Join Chapter House — soft lamps, quiet shelves, member evenings.</p>
-        <label>
-          <span>Full name</span>
-          <input type="text" name="name" id="signupName" placeholder="e.g. Alex Rivera" required />
+      <form id="signupForm" class="auth-form" novalidate>
+        <h1>Create your account</h1>
+        <p class="auth-sub">Join Chapter House for wishlists, event RSVPs, and member-only evenings.</p>
+
+        <div class="field">
+          <label for="signupName">Full name</label>
+          <input type="text" name="name" id="signupName" autocomplete="name" placeholder="Alex Rivera" required minlength="2" />
+          <p class="field-error" id="signupNameError" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="signupEmail">Email address</label>
+          <input type="email" name="email" id="signupEmail" autocomplete="email" placeholder="you@email.com" required />
+          <p class="field-error" id="signupEmailError" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="signupPassword">Password</label>
+          <input type="password" name="password" id="signupPassword" autocomplete="new-password" placeholder="Create a password" required minlength="8" />
+          <p class="field-hint">Use 8+ characters with a letter and a number</p>
+          <p class="field-error" id="signupPasswordError" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="signupConfirm">Confirm password</label>
+          <input type="password" name="confirm" id="signupConfirm" autocomplete="new-password" placeholder="Re-enter your password" required minlength="8" />
+          <p class="field-error" id="signupConfirmError" role="alert"></p>
+        </div>
+
+        <label class="checkbox-field">
+          <input type="checkbox" id="signupTerms" name="terms" required />
+          <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</span>
         </label>
-        <label>
-          <span>Email</span>
-          <input type="email" name="email" placeholder="you@email.com" required />
-        </label>
-        <label>
-          <span>Password <em>(anything works)</em></span>
-          <input type="password" name="password" placeholder="••••••••" required />
-        </label>
-        <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+        <p class="field-error" id="signupTermsError" role="alert"></p>
+
+        <button type="submit" class="btn btn-primary btn-block" id="signupSubmit">Create account</button>
       </form>
     </div>
   </main>
@@ -66,15 +93,15 @@
   <div class="welcome-modal" id="welcomeModal" hidden>
     <div class="welcome-panel">
       <div class="welcome-icon">📚</div>
-      <h2>Welcome to the bookstore</h2>
-      <p id="welcomeMsg">Nice to see you. Continue shopping — the shelves are waiting.</p>
+      <h2>Welcome back</h2>
+      <p id="welcomeMsg">Your account is active. Continue browsing our collection.</p>
       <a href="index.html" class="btn btn-primary">Continue shopping</a>
     </div>
   </div>
 
   <div class="gate-overlay" id="gateOverlay" hidden>
     <div class="gate-spinner"></div>
-    <p>Opening a private chapter…</p>
+    <p>Verifying credentials…</p>
   </div>
 
   <script src="js/auth.js"></script>

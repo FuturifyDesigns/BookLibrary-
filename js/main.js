@@ -18,10 +18,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const header = document.getElementById("siteHeader");
   if (header) {
     const onScroll = () => {
-      header.classList.toggle("scrolled", window.scrollY > 40);
+      header.classList.toggle("scrolled", window.scrollY > 60);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  const toggle = document.getElementById("navToggle");
+  const mobileNav = document.getElementById("mobileNav");
+  if (toggle && mobileNav) {
+    toggle.addEventListener("click", () => {
+      const open = mobileNav.classList.toggle("open");
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      mobileNav.setAttribute("aria-hidden", open ? "false" : "true");
+    });
+    mobileNav.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", () => {
+        mobileNav.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+        mobileNav.setAttribute("aria-hidden", "true");
+      });
+    });
   }
 
   const glow = document.getElementById("cursorGlow");
@@ -33,12 +50,65 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const toggle = document.getElementById("navToggle");
-  const mobileNav = document.getElementById("mobileNav");
-  if (toggle && mobileNav) {
-    toggle.addEventListener("click", () => mobileNav.classList.toggle("open"));
-    mobileNav.querySelectorAll("a").forEach((a) => {
-      a.addEventListener("click", () => mobileNav.classList.remove("open"));
+  const newsletterForm = document.getElementById("newsletterForm");
+  if (newsletterForm) {
+    const nameInput = document.getElementById("newsName");
+    const emailInput = document.getElementById("newsEmail");
+    const consentInput = document.getElementById("newsConsent");
+    const success = document.getElementById("newsSuccess");
+    const submitBtn = document.getElementById("newsSubmit");
+
+    const validateNewsletter = () => {
+      const nameErr = document.getElementById("newsNameError");
+      const emailErr = document.getElementById("newsEmailError");
+      const consentErr = document.getElementById("newsConsentError");
+
+      const nameOk = (() => {
+        const msg = !nameInput.value.trim()
+          ? "Please enter your name."
+          : nameInput.value.trim().length < 2
+            ? "Name must be at least 2 characters."
+            : "";
+        nameInput.classList.toggle("is-invalid", !!msg);
+        nameInput.classList.toggle("is-valid", !msg && nameInput.value.trim());
+        if (nameErr) nameErr.textContent = msg;
+        return !msg;
+      })();
+
+      const emailOk = (() => {
+        const val = emailInput.value.trim();
+        const msg = !val
+          ? "Please enter your email."
+          : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+            ? "Please enter a valid email address."
+            : "";
+        emailInput.classList.toggle("is-invalid", !!msg);
+        emailInput.classList.toggle("is-valid", !msg && val);
+        if (emailErr) emailErr.textContent = msg;
+        return !msg;
+      })();
+
+      const consentOk = consentInput.checked;
+      if (consentErr) consentErr.textContent = consentOk ? "" : "Please agree to receive updates.";
+
+      return nameOk && emailOk && consentOk;
+    };
+
+    newsletterForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!validateNewsletter()) return;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Subscribing…";
+      window.setTimeout(() => {
+        newsletterForm.reset();
+        [nameInput, emailInput].forEach((el) => el.classList.remove("is-valid", "is-invalid"));
+        success.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Subscribe";
+        window.setTimeout(() => {
+          success.hidden = true;
+        }, 5000);
+      }, 700);
     });
   }
 
